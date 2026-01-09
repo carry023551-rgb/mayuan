@@ -1,0 +1,2555 @@
+<!doctype html>
+<html lang="zh-CN" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>马原综合复习系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .font-serif-sc {
+      font-family: 'Noto Serif SC', serif;
+    }
+    
+    .font-sans-sc {
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    }
+    
+    .card-glass {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .input-glow:focus {
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3);
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+    
+    .tag-animate {
+      transition: all 0.2s ease;
+    }
+    
+    .tag-animate:hover {
+      transform: translateY(-2px);
+    }
+    
+    .result-enter {
+      animation: slideUp 0.4s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #fbbf24, #a855f7);
+      transition: width 0.3s ease;
+    }
+    
+    .keyword-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      margin: 0.125rem;
+    }
+    
+    .answer-structure {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 3px solid #fbbf24;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+    }
+    
+    .concept-card {
+      background: rgba(220, 38, 38, 0.05);
+      border-left: 3px solid #dc2626;
+      transition: all 0.3s ease;
+    }
+    
+    .concept-card:hover {
+      background: rgba(220, 38, 38, 0.1);
+      transform: translateX(4px);
+    }
+    
+    .tab-button {
+      position: relative;
+      padding: 0.75rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .tab-button.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 3px;
+      background: linear-gradient(90deg, #fbbf24, #a855f7);
+      border-radius: 2px 2px 0 0;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: rgba(229, 62, 62, 0.4);
+      border-radius: 3px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background: rgba(229, 62, 62, 0.6);
+    }
+    
+    .memory-level-1 {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    
+    .memory-level-2 {
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+    
+    .memory-level-3 {
+      border-color: rgba(34, 197, 94, 0.5);
+    }
+    
+    .flashcard {
+      perspective: 1000px;
+    }
+    
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+    
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+    
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body class="h-full gradient-bg font-sans-sc text-gray-100 overflow-auto">
+  <div class="min-h-full w-full p-4 md:p-8">
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto mb-8 text-center relative">
+      <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-32 bg-red-600/10 rounded-full blur-3xl"></div>
+      <h1 class="font-serif-sc text-3xl md:text-4xl font-bold text-white mb-2 relative">
+        马原综合复习系统
+      </h1>
+      <p class="text-gray-400 text-sm mt-4">11道大题记忆训练 + 核心概念速览</p>
+    </header>
+    
+    <!-- Mode Switch -->
+    <section class="max-w-6xl mx-auto mb-6">
+      <div class="card-glass rounded-2xl p-2 flex gap-2">
+        <button id="mode-exam" class="tab-button active flex-1 bg-gradient-to-r from-amber-500/30 to-purple-500/30 hover:from-amber-500/40 hover:to-purple-500/40 text-white font-medium rounded-xl transition-all">
+          📝 大题记忆训练
+        </button>
+        <button id="mode-concepts" class="tab-button flex-1 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-all">
+          ⚡ 核心概念速览
+        </button>
+        <button id="mode-quick-review" class="tab-button flex-1 bg-white/5 hover:bg-white/10 text-gray-300 font-medium rounded-xl transition-all">
+          🔄 快速复习
+        </button>
+      </div>
+    </section>
+    
+    <!-- Progress -->
+    <div class="max-w-6xl mx-auto mb-6 hidden" id="progress-section">
+      <div class="card-glass rounded-2xl p-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm text-gray-400">大题记忆进度</span>
+          <span id="progress-text" class="text-sm text-amber-400 font-medium">0/11</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="mt-2 flex justify-between text-xs text-gray-500">
+          <span>未开始</span>
+          <span>已掌握</span>
+        </div>
+      </div>
+    </div>
+    
+    <main class="max-w-6xl mx-auto">
+      <!-- ==================== 大题记忆训练模式 ==================== -->
+      <div id="exam-mode">
+        <!-- Question List -->
+        <section class="card-glass rounded-2xl p-6 mb-6">
+          <h2 class="font-serif-sc text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            11道大题列表
+          </h2>
+          <div id="question-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Questions will be populated by JS -->
+          </div>
+        </section>
+        
+        <!-- Answering Area -->
+        <section id="answering-area" class="hidden">
+          <!-- Current Question -->
+          <section id="question-section" class="card-glass rounded-2xl p-6 mb-6">
+            <div class="flex items-start justify-between mb-4">
+              <h2 class="font-serif-sc text-lg font-semibold text-white flex items-center gap-2">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                当前题目
+              </h2>
+              <div class="flex items-center gap-2">
+                <span id="question-number" class="text-xs bg-red-600/20 text-red-300 px-3 py-1 rounded-full">1/11</span>
+                <button id="toggle-hints" class="text-xs text-amber-400 hover:text-amber-300 transition-colors px-3 py-1 bg-amber-600/20 rounded-full">
+                  <span id="hint-toggle-text">显示记忆提示</span>
+                </button>
+              </div>
+            </div>
+            
+            <p id="question-text" class="text-gray-200 text-lg leading-relaxed mb-6"></p>
+            
+            <!-- Memory Hints (Hidden by default) -->
+            <div id="memory-hints" class="hidden space-y-4 mb-6">
+              <!-- Answer Structure -->
+              <div class="answer-structure">
+                <p class="text-amber-300 text-sm font-medium mb-2">📝 答题结构（按此顺序记忆）：</p>
+                <div id="structure-list" class="space-y-1 text-sm text-gray-300"></div>
+              </div>
+              
+              <!-- Key Points -->
+              <div>
+                <p class="text-amber-300 text-sm font-medium mb-2">🎯 必须包含的关键词：</p>
+                <div id="key-points-list" class="flex flex-wrap gap-2 mb-3"></div>
+              </div>
+              
+              <!-- Memory Tips -->
+              <div class="p-3 bg-blue-900/20 rounded-lg border border-blue-800/30">
+                <p class="text-blue-300 text-sm font-medium mb-1">💡 记忆技巧：</p>
+                <p id="memory-tips" class="text-xs text-gray-300"></p>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Answer Input -->
+          <section id="answer-section" class="card-glass rounded-2xl p-6 mb-6">
+            <h2 class="font-serif-sc text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              答题区域
+            </h2>
+            
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-400">答题模式：</span>
+                <div class="flex gap-2">
+                  <button id="mode-outline" class="px-3 py-1 text-xs bg-amber-600/20 text-amber-300 rounded-full border border-amber-500/30 transition-all">要点模式</button>
+                  <button id="mode-full" class="px-3 py-1 text-xs bg-white/5 text-gray-400 rounded-full border border-white/10 hover:bg-white/10 transition-all">全文模式</button>
+                </div>
+              </div>
+            </div>
+            
+            <textarea id="user-answer" class="w-full h-64 bg-white/5 border border-white/10 rounded-xl p-4 text-gray-200 placeholder-gray-500 resize-none input-glow focus:outline-none focus:border-red-500/50 transition-all" placeholder="请根据记忆提示的结构进行答题..."></textarea>
+            
+            <div class="mt-3 text-xs text-gray-500 flex justify-between">
+              <span>提示：尽量包含所有关键词，按结构分段</span>
+              <span id="word-count" class="text-gray-400">0 字</span>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+              <button id="check-btn" class="flex-1 bg-gradient-to-r from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                检验匹配度
+              </button>
+              <button id="show-answer-btn" class="bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+                查看答案
+              </button>
+              <button id="next-btn" class="bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                下一题
+              </button>
+            </div>
+          </section>
+          
+          <!-- Result Display -->
+          <section id="result-section" class="card-glass rounded-2xl p-6 mb-6 hidden">
+            <h2 class="font-serif-sc text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              匹配度分析
+            </h2>
+            <div id="result-content"></div>
+          </section>
+          
+          <!-- Reference Answer (Flashcard) -->
+          <section id="reference-section" class="mb-6 hidden">
+            <div class="flashcard w-full h-auto min-h-[400px] cursor-pointer" id="answer-flashcard">
+              <div class="flashcard-inner">
+                <!-- Front: Question and Keywords -->
+                <div class="flashcard-front card-glass rounded-2xl p-6">
+                  <div class="h-full flex flex-col">
+                    <div class="mb-4">
+                      <h3 class="font-serif-sc text-lg font-semibold text-white mb-2">参考答案（点击翻转）</h3>
+                      <p class="text-gray-400 text-sm">正面：查看答题结构和关键词</p>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-center">
+                      <div class="text-center mb-6">
+                        <svg class="w-16 h-16 text-amber-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        <p class="text-gray-300">点击卡片查看完整参考答案</p>
+                      </div>
+                      <div id="answer-keywords-front" class="mt-4">
+                        <!-- Keywords will be populated by JS -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Back: Full Answer -->
+                <div class="flashcard-back card-glass rounded-2xl p-6 overflow-y-auto">
+                  <div class="h-full">
+                    <div class="flex items-center justify-between mb-4">
+                      <h3 class="font-serif-sc text-lg font-semibold text-white">完整参考答案</h3>
+                      <span class="text-xs bg-red-600/20 text-red-300 px-3 py-1 rounded-full">背诵版</span>
+                    </div>
+                    <div id="reference-content" class="text-gray-300 leading-relaxed space-y-4 scrollbar-thin">
+                      <!-- Answer will be populated by JS -->
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-white/10">
+                      <p class="text-xs text-gray-400">💡 记忆技巧：先记框架，再记关键词，最后串联成完整答案</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+      
+      <!-- ==================== 核心概念速览模式 ==================== -->
+      <div id="concepts-mode" class="hidden">
+        <section class="card-glass rounded-2xl p-6 mb-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-serif-sc text-xl font-semibold text-white flex items-center gap-2">
+              <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              核心概念速览
+            </h2>
+            <div class="flex items-center gap-2">
+              <input type="text" id="concept-search" placeholder="搜索概念..." class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-red-500/50 w-48">
+              <span class="text-sm text-gray-400">10个模块，点击展开</span>
+            </div>
+          </div>
+          
+          <div id="concepts-container" class="space-y-8">
+            <!-- Concepts will be populated by JS -->
+          </div>
+        </section>
+      </div>
+      
+      <!-- ==================== 快速复习模式 ==================== -->
+      <div id="quick-review-mode" class="hidden">
+        <section class="card-glass rounded-2xl p-6 mb-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-serif-sc text-xl font-semibold text-white flex items-center gap-2">
+              <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              快速复习
+            </h2>
+            <div class="flex gap-2">
+              <button id="start-quiz" class="px-4 py-2 bg-gradient-to-r from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700 text-white text-sm rounded-lg transition-all">
+                开始测试
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 大题复习统计 -->
+            <div class="card-glass rounded-2xl p-6">
+              <h3 class="font-serif-sc text-lg font-semibold text-white mb-4">大题掌握情况</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-400">已练习</span>
+                  <span id="review-practiced" class="text-amber-300 font-bold">0/11</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-400">平均匹配度</span>
+                  <span id="review-avg-score" class="text-green-300 font-bold">0%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-400">完全掌握</span>
+                  <span id="review-mastered" class="text-green-300 font-bold">0题</span>
+                </div>
+              </div>
+              <button id="review-weak" class="mt-4 w-full py-3 bg-gradient-to-r from-amber-600/30 to-red-600/30 hover:from-amber-600/40 hover:to-red-600/40 text-amber-300 rounded-lg border border-amber-600/30 transition-all">
+                复习薄弱题目
+              </button>
+            </div>
+            
+            <!-- 概念复习统计 -->
+            <div class="card-glass rounded-2xl p-6">
+              <h3 class="font-serif-sc text-lg font-semibold text-white mb-4">核心概念掌握</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-400">已查看</span>
+                  <span id="concepts-viewed" class="text-blue-300 font-bold">0/100+</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-400">重点概念</span>
+                  <span id="key-concepts" class="text-red-300 font-bold">47个</span>
+                </div>
+              </div>
+              <button id="review-key-concepts" class="mt-4 w-full py-3 bg-gradient-to-r from-blue-600/30 to-purple-600/30 hover:from-blue-600/40 hover:to-purple-600/40 text-blue-300 rounded-lg border border-blue-600/30 transition-all">
+                复习重点概念
+              </button>
+            </div>
+          </div>
+          
+          <!-- 快速测试区 -->
+          <div class="mt-8 card-glass rounded-2xl p-6">
+            <h3 class="font-serif-sc text-lg font-semibold text-white mb-4">随机概念测试</h3>
+            <div id="quiz-area" class="hidden">
+              <p id="quiz-question" class="text-gray-200 text-lg mb-4"></p>
+              <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6"></div>
+              <div class="flex gap-3">
+                <button id="check-quiz" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">提交答案</button>
+                <button id="next-quiz" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg">下一题</button>
+              </div>
+            </div>
+            <div id="quiz-result" class="hidden"></div>
+          </div>
+        </section>
+      </div>
+      
+      <!-- Footer -->
+      <footer class="mt-8 text-center text-gray-500 text-xs">
+        <p>马原综合复习系统 | 大题记忆训练 + 核心概念速览 | 2026年1月</p>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ==================== 大题数据 ====================
+    const questionBank = [
+      {
+        id: 1,
+        title: "1. 如何理解马克思主义理论的产生历程、理论渊源和基本特征？",
+        category: "哲学基础",
+        structure: [
+          "（1）产生历程（资本主义发展、无产阶级反抗）",
+          "（2）理论渊源（直接理论来源、自然科学前提）",
+          "（3）基本特征（一句话概括：科学性与革命性的统一）"
+        ],
+        keyPoints: [
+          "社会根源", "阶级基础", "资本主义生产方式", "无产阶级反抗",
+          "德国古典哲学", "英国古典政治经济学", "空想社会主义", "圣西门", "傅立叶", "欧文",
+          "三大科学发现", "能量守恒与转化定律", "细胞学说", "生物进化论",
+          "科学性", "实践性", "人民性", "发展性", "革命性", "科学性与革命性的统一"
+        ],
+        memoryTips: "口诀：产生（根源+基础）→ 渊源（三大来源+三大发现）→ 特征（四性+革命性+统一）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）产生历程</p>
+              <p><strong>社会根源（经济社会背景）：</strong>资本主义生产方式的发展</p>
+              <p><strong>阶级基础（实践基础）：</strong>无产阶级反抗资产阶级剥削和压迫的斗争</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）理论渊源</p>
+              <p>19世纪西欧三大先进思潮为马克思主义的创立提供了直接的理论来源：</p>
+              <p>• <strong>德国古典哲学</strong> → 马克思主义哲学</p>
+              <p>• <strong>英国古典政治经济学</strong> → 马克思主义政治经济学</p>
+              <p>• <strong>英法两国的空想社会主义</strong>（圣西门、傅立叶、欧文）→ 科学社会主义</p>
+              <p>19世纪的<strong>三大科学发现</strong>（能量守恒与转化定律、细胞学说、生物进化论）为马克思主义提供了自然科学前提。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（3）基本特征</p>
+              <p>马克思主义具有鲜明的<strong>科学性、实践性、人民性和发展性</strong>；</p>
+              <p>马克思主义的人民性、实践性和发展性集中地体现为革命性；</p>
+              <p>马克思主义的基本特征，用一句话概括就是<strong>科学性与革命性的统一</strong>。</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 2,
+        title: "2. 如何理解唯物辩证法的特征和基本原理？（235）",
+        category: "唯物辩证法",
+        structure: [
+          "先说明唯物辩证法包括什么（两大特征、三大规律、五对范畴）",
+          "唯物辩证法的总观点（联系和发展的观点）",
+          "对立统一规律（实质和核心、矛盾分析法）",
+          "量变质变规律（量变与质变的关系）",
+          "否定之否定规律（肯定-否定-否定之否定）"
+        ],
+        keyPoints: [
+          "两大特征", "联系", "发展", "三大规律", "五对范畴",
+          "对立统一规律", "实质和核心", "矛盾分析法",
+          "量变质变规律", "量变是质变的必要准备", "质变是量变的必然结果", "相互渗透",
+          "否定之否定规律", "内在矛盾运动", "自我否定", "肯定-否定-否定之否定"
+        ],
+        memoryTips: "口诀：235（两大特征、三大规律、五对范畴）→ 联系发展是总特征 → 对立统一是核心 → 量变质变 → 否定之否定",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">唯物辩证法包括：</p>
+              <p><strong>两大特征：</strong>联系和发展</p>
+              <p><strong>三大规律：</strong>对立统一规律，量变质变规律，否定之否定规律</p>
+              <p><strong>五对范畴：</strong>内容与形式，本质与现象，原因与结果，必然与偶然，可能与现实</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">总特征：</p>
+              <p>唯物辩证法是关于世界普遍联系和变化发展的科学，<strong>联系和发展的观点是唯物辩证法的总观点</strong>，集中体现了唯物辩证法的总特征。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">对立统一规律：</p>
+              <p>对立统一规律是唯物辩证法的<strong>实质和核心</strong>，它揭示了事物普遍联系的根本内容和变化发展的内在动力，是唯物辩证法规律和范畴的中心线索和钥匙，提供了人们认识世界和改造世界的根本方法-<strong>矛盾分析法</strong>。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">量变质变规律：</p>
+              <p>量变是质变的必要准备；质变是量变的必然结果；量变质变是相互渗透的。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">否定之否定规律：</p>
+              <p>事物的发展是通过其内在矛盾运动以自我否定的方式而实现的。否定之否定规律说明了事物的辩证否定不是一次完成的，而是经历事物的自我发展的两次否定、三个阶段，即<strong>"肯定-否定-否定之否定"</strong>。</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 3,
+        title: "3. 如何理解认识与实践之间的辩证关系？（决定与反作用）",
+        category: "认识论",
+        structure: [
+          "（1）认识的过程（感性认识到理性认识、循环往复）",
+          "（2）认识与实践的辩证运动规律（决定与反作用）",
+          "（3）实践对认识的决定作用（4条）"
+        ],
+        keyPoints: [
+          "认识过程", "实践基础", "感性认识到理性认识", "循环往复", "无限发展",
+          "实践决定认识", "认识反作用与实践", "波浪式前进", "螺旋式上升",
+          "认识的来源", "认识发展的动力", "认识的目的", "检验认识真理性的唯一标准"
+        ],
+        memoryTips: "口诀：过程（感性→理性→实践）→ 规律（决定+反作用）→ 决定作用（4条）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）认识的过程：</p>
+              <p>人的认识过程是一个在实践基础上不断深化的发展过程，既表现为实践基础上由<strong>感性认识到理性认识</strong>，再从理性认识到实践的具体认识过程，又表现为从实践到认识，再从认识到实践的<strong>循环往复和无限发展</strong>的总过程。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）认识与实践的辩证运动规律：</p>
+              <p><strong>实践决定认识，认识反作用与实践。</strong></p>
+              <p>实践和认识的辩证运动，是一个由感性认识到理性认识，又由理性认识到实践的飞跃，是实践、认识、再实践、再认识，循环往复以至无穷的辩证发展过程。</p>
+              <p>这个过程即是认识在实践基础上沿着科学性的方向不断深化发展的过程，也是实践在认识的指导下沿着合理性方向不断深入推进的过程；这个过程是一个<strong>波浪式前进和螺旋式上升</strong>的过程。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（3）实践对认识的决定作用（4条）：</p>
+              <p>• <strong>实践是认识的来源</strong></p>
+              <p>• <strong>实践是认识发展的动力</strong></p>
+              <p>• <strong>实践是认识的目的</strong></p>
+              <p>• <strong>实践是检验认识真理性的唯一标准</strong></p>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 4,
+        title: "4. 如何理解实践是检验真理的唯一标准？（真理的本性和实践的特点决定）",
+        category: "认识论",
+        structure: [
+          "（1）由真理的本性和实践的特点决定",
+          "（2）真理的本性在于主观和客观相符合",
+          "（3）从实践的特点看，实践具有直接现实性"
+        ],
+        keyPoints: [
+          "真理的本性", "实践的特点", "主观和客观相符合",
+          "主客观联系的桥梁", "纽带", "交错点", "社会实践",
+          "直接现实性", "客观实在性", "终极审判官"
+        ],
+        memoryTips: "口诀：决定（本性+特点）→ 本性（主客观符合）→ 特点（直接现实性）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）由真理的本性和实践的特点决定：</p>
+              <p>实践之所以能够作为检验真理的唯一标准，是由于<strong>真理的本性和实践的特点</strong>决定的。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）真理的本性在于主观和客观相符合：</p>
+              <p>所谓检验真理，就是检验人的主观认识同客观实际是否相符合以及符合的程度。这就决定了检验标准既不能是主观认识本身，也不能是客观事物，只有那种能够把主观认识与客观事物联系和沟通起来，从而使人们能够把二者加以比较和对照的东西，才能充当检验真理的标准。具有这种特性的东西，只能是作为<strong>主客观联系的桥梁、纽带或"交错点"的社会实践</strong>。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（3）从实践的特点看，实践具有直接现实性：</p>
+              <p>实践的直接现实性是它的客观实在性的具体表现。实践能够把一定的认识、理论变成直接的、实实在在的现实，从而判明主观与客观是否一致，判明认识是否具有真理性。</p>
+              <p>实践的<strong>直接现实性</strong>的品格，是实践能够成为检验真理唯一标准的主要根据，也使实践成为最公正、最有权威的<strong>"终极审判官"</strong>。</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 5,
+        title: "5. 如何理解人民群众及其在创造历史中的作用？",
+        category: "唯物史观",
+        structure: [
+          "（1）人民群众（质的定义、量的定义、历史范畴）",
+          "（2）人民群众在创造历史过程中的决定作用（三条）"
+        ],
+        keyPoints: [
+          "人民群众", "质", "量", "历史范畴", "劳动群众",
+          "社会历史实践的主体", "历史的创造者",
+          "社会物质财富的创造者", "社会精神财富的创造者", "社会变革的决定力量",
+          "社会基本矛盾", "总体意愿", "社会实践"
+        ],
+        memoryTips: "口诀：人民群众（质+量+范畴）→ 决定作用（物质+精神+变革）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）人民群众：</p>
+              <p>人民群众从<strong>质</strong>上说是指一切对社会历史发展起推动作用的人，从<strong>量</strong>上说是指社会人口中绝大多数。人民群众是一个<strong>历史范畴</strong>。在不同的历史时期，人民群众有着不同的内容，包含着不同的阶级、阶层和集团，但其中最稳定的主体部分始终是<strong>从事物质资料生产的劳动群众</strong>。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）人民群众在创造历史过程中的决定作用：</p>
+              <p>人民群众是社会历史实践的主体，是<strong>历史的创造者</strong>。</p>
+              <p><strong>第一，人民群众是社会物质财富的创造者。</strong></p>
+              <p><strong>第二，人民群众是社会精神财富的创造者。</strong></p>
+              <p><strong>第三，人民群众是社会变革的决定力量。</strong></p>
+              <p>人民群众创造历史的作用是同<strong>社会基本矛盾</strong>推动社会前进的过程相一致的。人民群众的总体意愿和行动代表了历史发展的方向，人民群众的社会实践最终决定历史发展的结局。</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 6,
+        title: "6. 如何理解唯物史观与唯心史观的联系和区别？",
+        category: "唯物史观",
+        structure: [
+          "（1）联系（都是历史观，回答根本问题）",
+          "（2）区别（四个方面的区别）"
+        ],
+        keyPoints: [
+          "历史观", "历史发展的动力", "社会存在决定社会意识", "物质生产方式的矛盾运动",
+          "社会意识决定社会存在", "精神因素",
+          "历史的主体", "人民群众", "英雄人物",
+          "社会结构", "生产力", "生产关系", "上层建筑",
+          "历史客观性", "客观规律", "偶然事件"
+        ],
+        memoryTips: "口诀：联系（都是历史观）→ 区别（动力、主体、结构、客观性）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）联系：</p>
+              <p>二者都是对人类社会历史发展规律的解释体系，都试图回答"社会历史由什么推动、历史主体是谁"等根本问题，是哲学史上关于<strong>历史观</strong>的两种核心思潮。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）区别：</p>
+              
+              <div class="ml-4 space-y-3">
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>历史发展的动力（矛盾与精神）：</strong></p>
+                  <p>• 唯物史观：<strong>社会存在决定社会意识</strong>，历史发展的根本动力是<strong>物质生产方式的矛盾运动</strong></p>
+                  <p>• 唯心史观：社会意识决定社会存在，历史发展的动力是精神因素</p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>历史的主体（人民群众与英雄人物）：</strong></p>
+                  <p>• 唯物史观：<strong>人民群众是历史的创造者</strong></p>
+                  <p>• 唯心史观：少数英雄、伟人是历史的主宰</p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>对社会结构的认知（物质与精神）：</strong></p>
+                  <p>• 唯物史观：从物质生产出发，将社会划分为<strong>生产力、生产关系（经济基础）、上层建筑</strong>等层次，强调各层次的客观联系与矛盾运动</p>
+                  <p>• 唯心史观：从精神、思想出发，将社会发展归结为观念的演变，忽视物质生产、经济关系的决定性作用</p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>历史的客观性（客观规律与偶然）：</strong></p>
+                  <p>• 唯物史观：历史发展有<strong>客观规律</strong></p>
+                  <p>• 唯心史观：历史是偶然事件的堆积</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 7,
+        title: "7. 如何理解社会基本矛盾与社会主要矛盾的联系和区别？",
+        category: "唯物史观",
+        structure: [
+          "社会基本矛盾的定义",
+          "社会主要矛盾的定义",
+          "（1）联系",
+          "（2）区别（四个方面）"
+        ],
+        keyPoints: [
+          "社会基本矛盾", "生产力和生产关系的矛盾", "经济基础和上层建筑的矛盾", "根本矛盾",
+          "社会主要矛盾", "支配地位", "起主导作用", "特定阶段",
+          "根源", "相互作用", "推动社会发展",
+          "定义不同", "存在范围", "作用性质", "表现形式"
+        ],
+        memoryTips: "口诀：定义（基本+主要）→ 联系（根源+推动）→ 区别（定义、范围、性质、形式）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">社会基本矛盾：</p>
+              <p>指的是<strong>生产力和生产关系的矛盾、经济基础和上层建筑的矛盾</strong>，这是贯穿人类社会发展始终的根本矛盾。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">社会主要矛盾：</p>
+              <p>在某一社会发展阶段居于<strong>支配地位、起主导作用</strong>的矛盾，是特定阶段社会问题的集中体现。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）联系：</p>
+              <p>• 社会基本矛盾是主要矛盾的<strong>根源</strong></p>
+              <p>• 二者<strong>相互作用推动社会发展</strong></p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）区别：</p>
+              
+              <div class="ml-4 space-y-3">
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>定义不同：</strong></p>
+                  <p>• 社会基本矛盾是<strong>根本矛盾</strong></p>
+                  <p>• 社会主要矛盾是<strong>主导矛盾</strong></p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>存在范围：</strong></p>
+                  <p>• 社会基本矛盾具有<strong>普遍性、永恒性</strong></p>
+                  <p>• 社会主要矛盾具有<strong>特殊性、阶段性</strong></p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>作用性质：</strong></p>
+                  <p>• 社会基本矛盾决定社会发展的<strong>根本方向</strong></p>
+                  <p>• 社会主要矛盾影响社会发展的<strong>具体进程</strong></p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>表现形式：</strong></p>
+                  <p>• 社会基本矛盾相对<strong>抽象、深层</strong>，隐藏在社会经济结构和制度层面</p>
+                  <p>• 社会主要矛盾相对<strong>具体、表层</strong>，直接表现为经济社会发展中的突出问题</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 8,
+        title: "8. 如何理解马克思劳动价值论的当代价值？（理论和实践）",
+        category: "政治经济学",
+        structure: [
+          "第一，为剩余价值理论奠定基础（理论意义）",
+          "第二，揭示商品经济基本矛盾（理论意义）",
+          "第三，指导社会主义市场经济（实践意义）"
+        ],
+        keyPoints: [
+          "劳动二重性理论", "具体劳动", "抽象劳动", "使用价值", "价值",
+          "剩余价值理论", "理解政治经济学的枢纽",
+          "商品经济基本矛盾", "物与物的关系", "人与人的关系", "商品拜物教",
+          "社会主义市场经济", "经济体制改革", "现实指导意义"
+        ],
+        memoryTips: "口诀：理论意义（剩余价值+商品经济矛盾）→ 实践意义（指导市场经济）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">第一，为剩余价值理论奠定基础（理论意义）：</p>
+              <p>马克思劳动价值论扬弃了英国古典政治经济学的观点，为剩余价值理论的创立奠定了基础。马克思在继承英国古典政治经济学劳动创造价值理论的同时，创立了<strong>劳动二重性理论</strong>，第一次确定了什么样的劳动形成价值、为什么形成价值以及怎样形成价值，阐明了具体劳动和抽象劳动在商品价值形成中的不同作用，从而为揭示剩余价值的真正来源、创立剩余价值理论奠定了基础。此外，马克思的资本有机构成理论、资本积累理论、社会资本再生产理论等政治经济学的一系列重要理论的创立，也都同劳动二重性理论有关。因此，劳动二重性理论成为<strong>"理解政治经济学的枢纽"</strong>。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">第二，揭示商品经济基本矛盾（理论意义）：</p>
+              <p>马克思劳动价值论揭示了私有制条件下商品经济的基本矛盾，为从<strong>物与物的关系背后揭示人与人的关系</strong>提供了理论依据。这对我们科学认识商品经济的本质，正确理解商品经济的运动规律及其影响，清除商品拜物教观念，具有十分重要的理论意义和现实意义。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">第三，指导社会主义市场经济（实践意义）：</p>
+              <p>马克思劳动价值论揭示了商品经济的一般规律，对理解<strong>社会主义市场经济</strong>具有指导意义。对于我国深化经济体制改革、完善社会主义市场经济体制，实现社会主义现代化建设的宏伟目标，具有重要的<strong>现实指导意义</strong>。</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 9,
+        title: "9. 如何理解经济全球化的表现及动因？",
+        category: "政治经济学",
+        structure: [
+          "（1）经济全球化的表现（三个方面）",
+          "（2）导致经济全球化迅猛发展的因素（三个方面）"
+        ],
+        keyPoints: [
+          "生产全球化", "国际水平分工", "国际垂直分工",
+          "贸易全球化", "商品和劳务", "自由流动",
+          "金融全球化", "金融市场", "金融体系", "金融交易",
+          "科学技术进步", "生产力发展", "信息技术革命",
+          "跨国公司", "企业组织形式", "国际分工",
+          "经济体制变革", "国际经济组织", "体制与组织保障"
+        ],
+        memoryTips: "口诀：表现（生产+贸易+金融）→ 动因（科技+公司+体制）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）经济全球化的表现：</p>
+              
+              <div class="ml-4 space-y-3">
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>一是生产全球化：</strong></p>
+                  <p>在经济全球化过程中，<strong>国际水平分工</strong>逐渐取代国际垂直分工，成为居主导地位的分工形式。</p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>二是贸易全球化：</strong></p>
+                  <p>贸易全球化是指<strong>商品和劳务在全球范围内的自由流动</strong>。</p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>三是金融全球化：</strong></p>
+                  <p>金融全球化是指世界各国、各地区在金融业务、金融政策等方面相互协调、相互渗透、相互竞争不断加强，使<strong>全球金融市场更加开放、金融体系更加融合、金融交易更加自由</strong>的过程。</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）导致经济全球化迅猛发展的因素主要有：</p>
+              
+              <div class="ml-4 space-y-3">
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>一是科学技术的进步和生产力的发展：</strong></p>
+                  <p>为经济全球化提供了<strong>坚实的物质基础和根本的推动力</strong>，特别是<strong>信息技术革命</strong>，加快了信息传送的速度，极大降低了信息传送的成本，推动了经济全球化的迅速发展。</p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>二是跨国公司的发展：</strong></p>
+                  <p>为经济全球化提供了<strong>适宜的企业组织形式</strong>，促进了国际分工，推动了经济全球化的进程。</p>
+                </div>
+                
+                <div>
+                  <p class="text-amber-300 text-sm"><strong>三是各国经济体制的变革和国际经济组织的发展：</strong></p>
+                  <p>是经济全球化的<strong>体制与组织保障</strong>，为国际资本的流动、国际贸易的扩大、国际生产的大规模进行提供了适宜的体制环境和政策条件，促进了经济全球化的发展。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 10,
+        title: "10. 如何理解资本主义的历史地位及其发展趋势？（重要）",
+        category: "政治经济学",
+        structure: [
+          "（1）资本主义社会的出现是客观的自然历史过程",
+          "（2）资本主义的巨大的历史进步性（三条）",
+          "（3）资本主义的历史进步性并不能掩盖其自身的局限性（三条）",
+          "（4）资本主义为社会主义所代替的历史必然性（必背，四条）"
+        ],
+        keyPoints: [
+          "自然历史过程",
+          "历史进步性", "科学技术转变为生产力", "剩余价值", "竞争",
+          "局限性", "基本矛盾", "两极分化", "经济危机", "社会矛盾",
+          "历史必然性", "社会主义代替", "资本积累", "国家垄断资本主义",
+          "资产阶级", "无产阶级", "矛盾斗争"
+        ],
+        memoryTips: "口诀：过程→进步性（3条）→局限性（3条）→必然性（4条）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">（1）资本主义社会的出现是客观的不以人的意志为转移的自然历史过程</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（2）资本主义的巨大的历史进步性：</p>
+              <p>• 首先，资本主义将<strong>科学技术转变为强大的生产力</strong>。</p>
+              <p>• 其次，资本追求剩余价值的内在动力和竞争的外在压力推动了<strong>社会生产力的迅速发展</strong>。</p>
+              <p>• 最后，资本主义的意识形态和政治制度作为上层建筑在战胜封建社会自给自足的小生产的生产方式，保护、促进和完善资本主义生产方式方面起着重要作用，从而推动了社会生产力的迅速发展，促进了社会进步。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（3）资本主义的历史进步性并不能掩盖其自身的局限性：</p>
+              <p>• 第一，资本主义的<strong>基本矛盾</strong>阻碍社会生产力的发展。</p>
+              <p>• 第二，资本主义制度下<strong>财富占有两极分化</strong>，引发经济危机。</p>
+              <p>• 第三，资产阶级支配和控制资本主义经济和政治的发展和运行，不断激化社会矛盾和冲突。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">（4）资本主义为社会主义所代替的历史必然性（必背）：</p>
+              <p>资本主义的内在矛盾决定了<strong>资本主义必然被社会主义所代替</strong>。</p>
+              <p>• 首先，<strong>资本主义基本矛盾</strong>"包含着现代的一切冲突的萌芽"。</p>
+              <p>• 其次，<strong>资本积累</strong>推动资本主义基本矛盾不断激化并最终否定资本主义自身。</p>
+              <p>• 再次，<strong>国家垄断资本主义</strong>是资本社会化的更高形式，将成为社会主义的前奏。</p>
+              <p>• 最后，资本主义社会存在着<strong>资产阶级和无产阶级两大阶级之间的矛盾和斗争</strong>。</p>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 11,
+        title: "11. 如何理解中国特色社会主义建设、社会主义社会与共产主义社会的关系？",
+        category: "科学社会主义",
+        structure: [
+          "一，共产主义社会是社会主义社会的终极目标",
+          "二，中国特色社会主义是社会主义社会的具体实践形态",
+          "三，中国特色社会主义建设是通向共产主义社会的现实路径"
+        ],
+        keyPoints: [
+          "共产主义社会", "终极目标",
+          "中国特色社会主义", "具体实践形态", "科学社会主义", "中华优秀传统文化",
+          "现实路径", "解放和发展生产力", "共同富裕", "社会全面进步"
+        ],
+        memoryTips: "口诀：目标（共产主义）→ 形态（中国特色）→ 路径（建设实践）",
+        answer: `
+          <div class="space-y-4">
+            <div>
+              <p class="text-red-300 font-medium mb-2">一，共产主义社会是社会主义社会的终极目标：</p>
+              <p>共产主义是人类最美好的社会制度，代表着人类社会发展的最高阶段和最终方向。社会主义社会的一切建设和发展，都是为了最终实现共产主义这一崇高目标。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">二，中国特色社会主义是社会主义社会的具体实践形态：</p>
+              <p>中国特色社会主义是根植于中国大地，反映中国人民意愿，适应中国和时代发展进步要求的科学社会主义，集中体现了科学社会主义基本原则与当代中国实际、中华优秀传统文化的有机统一。它既坚持了科学社会主义基本原则，又具有鲜明的民族特色和时代特色。</p>
+            </div>
+            
+            <div>
+              <p class="text-red-300 font-medium mb-2">三，中国特色社会主义建设是通向共产主义社会的现实路径：</p>
+              <p>通过中国特色社会主义的建设和发展，大力解放和发展生产力，逐步消灭剥削和消除两极分化，实现共同富裕和社会全面进步，最终为向共产主义社会过渡创造条件。中国特色社会主义建设是实现共产主义远大理想的必经阶段和现实途径。</p>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    // ==================== 核心概念数据 ====================
+    const coreConcepts = [
+      {
+        id: 1,
+        title: "1. 马克思主义、哲学的基本问题、唯物主义与唯心主义",
+        concepts: [
+          {
+            name: "马克思主义",
+            subtitle: "六个'是' + 三个组成部分",
+            keyPoints: [
+              "<strong>【六个'是'】</strong>科学理论体系 → 一般规律学说 → 社会主义必然胜利 → 人类解放学说 → 指导思想 → 行动指南",
+              "<strong>【三个组成部分】</strong>马克思主义哲学 + 马克思主义政治经济学 + 科学社会主义"
+            ],
+            quickTip: "💡 记忆口诀：理论体系、社会发展、人类解放"
+          },
+          {
+            name: "哲学的基本问题",
+            subtitle: "思维与存在的关系",
+            keyPoints: [
+              "<strong>【第一方面】</strong>谁是第一性？→ 区分<span class='text-red-400'>唯物主义/唯心主义</span>",
+              "<strong>【第二方面】</strong>有无同一性？→ 区分<span class='text-yellow-400'>可知论/不可知论</span>"
+            ],
+            quickTip: "💡 两个标准：本原问题 + 认识问题"
+          },
+          {
+            name: "唯物主义三种形态",
+            subtitle: "从朴素到科学的发展",
+            keyPoints: [
+              "<strong>【古代朴素】</strong>具体物质形态（水、火、气）",
+              "<strong>【近代形而上学】</strong>原子是最小单位",
+              "<strong>【现代辩证】</strong>客观实在性是本质"
+            ],
+            quickTip: "💡 发展脉络：具体→原子→客观实在"
+          },
+          {
+            name: "唯心主义两种形态",
+            subtitle: "精神是世界本原",
+            keyPoints: [
+              "<strong>【主观唯心】</strong>'我'的意识（心即理、吾心即宇宙）",
+              "<strong>【客观唯心】</strong>独立的客观精神（理念、绝对精神）"
+            ],
+            quickTip: "💡 区别：主观的我 vs 客观的精神"
+          }
+        ]
+      },
+      {
+        id: 2,
+        title: "2. 物质、意识、运动、联系、发展、矛盾、否定、本质、现象",
+        concepts: [
+          {
+            name: "物质",
+            subtitle: "客观实在性",
+            keyPoints: [
+              "<strong>【列宁定义】</strong>客观实在 + 不依赖意识 + 能被感知反映",
+              "<strong>【共同特性】</strong>客观实在性"
+            ],
+            quickTip: "💡 核心：客观存在的都是物质"
+          },
+          {
+            name: "意识",
+            subtitle: "物质世界的产物",
+            keyPoints: [
+              "物质世界长期发展的产物 + 人脑的机能和属性 + 客观世界的主观映像",
+              "<strong class='text-red-400'>【关键】劳动是决定性因素</strong>"
+            ],
+            quickTip: "💡 本质：客观内容 + 主观形式"
+          },
+          {
+            name: "运动",
+            subtitle: "物质的存在方式",
+            keyPoints: [
+              "物质的<strong>存在方式和根本属性</strong>",
+              "物质和运动不可分割"
+            ],
+            quickTip: "💡 物质必然运动，运动必有物质"
+          },
+          {
+            name: "联系",
+            subtitle: "事物相互作用",
+            keyPoints: [
+              "<strong>【四大特性】</strong>客观性、普遍性、多样性、条件性"
+            ],
+            quickTip: "💡 万物皆联系，联系有条件"
+          },
+          {
+            name: "发展",
+            subtitle: "前进上升的运动",
+            keyPoints: [
+              "事物变化中<strong>前进的、上升的</strong>运动",
+              "区别于一般运动变化"
+            ],
+            quickTip: "💡 发展=前进+上升"
+          },
+          {
+            name: "矛盾",
+            subtitle: "对立统一",
+            keyPoints: [
+              "<strong>【对立属性】</strong>斗争性",
+              "<strong>【统一属性】</strong>同一性"
+            ],
+            quickTip: "💡 既对立又统一"
+          },
+          {
+            name: "否定",
+            subtitle: "辩证否定观",
+            keyPoints: [
+              "事物的<strong>自我否定</strong>（内因）",
+              "发展的环节 + 联系的环节",
+              "<strong class='text-red-400'>【实质】扬弃 = 批判+继承</strong>"
+            ],
+            quickTip: "💡 不是全盘否定，而是扬弃"
+          },
+          {
+            name: "现象与本质",
+            subtitle: "表象与内核",
+            keyPoints: [
+              "<strong>【本质】</strong>根本性质、内在联系（理性把握）",
+              "<strong>【现象】</strong>外部联系、表面特征（感官感知）",
+              "现象分真象和假象"
+            ],
+            quickTip: "💡 透过现象看本质"
+          }
+        ]
+      },
+      {
+        id: 3,
+        title: "3. 认识、实践、主观能动性",
+        concepts: [
+          {
+            name: "实践",
+            subtitle: "改造世界的物质活动",
+            keyPoints: [
+              "人类能动地改造世界的<strong>社会性物质活动</strong>",
+              "<strong>【三大特性】</strong>客观实在性、自觉能动性、社会历史性"
+            ],
+            quickTip: "💡 物质性活动 + 社会性 + 能动性"
+          },
+          {
+            name: "认识",
+            subtitle: "主体对客体的反映",
+            keyPoints: [
+              "<strong>本质：</strong>主体在<span class='text-red-400'>实践基础上</span>对客体的能动反映"
+            ],
+            quickTip: "💡 实践基础上的能动反映"
+          },
+          {
+            name: "实践与认识的关系",
+            subtitle: "辩证统一",
+            keyPoints: [
+              "<strong>【实践决定认识】</strong>来源、动力、目的、检验标准",
+              "<strong>【认识反作用于实践】</strong>指导实践"
+            ],
+            quickTip: "💡 实践第一性，认识有反作用"
+          },
+          {
+            name: "主观能动性",
+            subtitle: "人特有的能力",
+            keyPoints: [
+              "人的意识和实践对客观世界的<strong>能动作用</strong>",
+              "人类特有的能力与活动"
+            ],
+            quickTip: "💡 人区别于动物的关键"
+          }
+        ]
+      },
+      {
+        id: 4,
+        title: "4. 真理与谬误、价值与价值评价",
+        concepts: [
+          {
+            name: "真理",
+            subtitle: "主客观相符合",
+            keyPoints: [
+              "对客观事物及其规律的<strong>正确反映</strong>",
+              "<strong>【特点】</strong>客观性、一元性、绝对性、相对性、具体性"
+            ],
+            quickTip: "💡 真理既绝对又相对"
+          },
+          {
+            name: "谬误",
+            subtitle: "违背客观规律",
+            keyPoints: [
+              "与客观事物及规律<strong>相违背</strong>",
+              "对客观的歪曲反映"
+            ],
+            quickTip: "💡 真理的对立面"
+          },
+          {
+            name: "价值",
+            subtitle: "客体对主体的意义",
+            keyPoints: [
+              "反映主客体<strong>意义关系</strong>的范畴",
+              "<strong>【特点】</strong>主体性、客观性、多维性、社会历史性"
+            ],
+            quickTip: "💡 有用性、意义性"
+          },
+          {
+            name: "价值评价",
+            subtitle: "有正确与错误之分",
+            keyPoints: [
+              "主体对客体价值的判断",
+              "<strong>【特点】</strong>主观性 + 客观标准",
+              "<strong class='text-red-400'>【最高标准】</strong>推动社会进步、符合人民利益"
+            ],
+            quickTip: "💡 主观判断需要客观标准"
+          }
+        ]
+      },
+      {
+        id: 5,
+        title: "5. 社会存在、社会意识、意识形态、社会形态、改革、交往",
+        concepts: [
+          {
+            name: "社会存在",
+            subtitle: "社会生活的物质方面",
+            keyPoints: [
+              "包括<strong>自然地理环境、人口因素、物质生产方式</strong>",
+              "<strong class='text-amber-400'>【决定性因素】</strong>物质生产方式"
+            ],
+            quickTip: "💡 物质生产方式是核心"
+          },
+          {
+            name: "社会意识",
+            subtitle: "社会存在的反映",
+            keyPoints: [
+              "社会生活的<strong>精神方面</strong>",
+              "<strong>【低层次】</strong>社会心理（感性认知为主）",
+              "<strong>【高层次】</strong>自觉、系统、相对稳定的社会意识（理性认识为主）"
+            ],
+            quickTip: "💡 分为感性和理性两个层次"
+          },
+          {
+            name: "意识形态 vs 非意识形态",
+            subtitle: "客观题最爱考！",
+            keyPoints: [
+              "<strong class='text-amber-400'>【意识形态】</strong>反映特定阶级利益和要求 → 政治法律思想、道德、艺术、宗教、哲学",
+              "<strong class='text-purple-400'>【非意识形态】</strong>不反映特定阶级利益 → 自然科学、语言学、形式逻辑",
+              "<strong class='text-red-400'>【记忆口诀】</strong>与阶级有关就是意识形态！"
+            ],
+            quickTip: "💡 看是否与特定阶级利益相关"
+          },
+          {
+            name: "社会形态",
+            subtitle: "经济基础+上层建筑的统一体",
+            keyPoints: [
+              "同<strong>生产力发展一定阶段</strong>相适应",
+              "是<strong>经济基础与上层建筑</strong>的统一体",
+              "是社会的<strong>经济形态、政治形态、意识形态</strong>三者的统一"
+            ],
+            quickTip: "💡 社会运动的具体形式和发展阶段"
+          },
+          {
+            name: "改革",
+            subtitle: "推动社会发展的重要动力",
+            keyPoints: [
+              "同一种社会形态发展过程中的<strong>量变和部分质变</strong>",
+              "是推动社会发展的<strong>又一重要动力</strong>"
+            ],
+            quickTip: "💡 量变+部分质变，不改变根本制度"
+          },
+          {
+            name: "交往",
+            subtitle: "世界历史的基本特征",
+            keyPoints: [
+              "<strong>普遍交往</strong>是世界历史的基本特征"
+            ],
+            quickTip: "💡 全球化时代的重要概念"
+          }
+        ]
+      },
+      {
+        id: 6,
+        title: "6. 生产力、生产关系、经济基础、上层建筑、科学技术、历史人物",
+        concepts: [
+          {
+            name: "生产力",
+            subtitle: "生产的物质内容",
+            keyPoints: [
+              "<strong>【基本三要素】</strong>劳动者 + 劳动资料 + 劳动对象"
+            ],
+            quickTip: "💡 人、工具、对象缺一不可"
+          },
+          {
+            name: "生产关系",
+            subtitle: "生产的社会形式",
+            keyPoints: [
+              "是<strong>社会关系中最基本的关系</strong>",
+              "包括<strong>生产资料所有制关系、生产中人与人的关系、产品分配关系</strong>"
+            ],
+            quickTip: "💡 所有制、人际关系、分配关系"
+          },
+          {
+            name: "经济基础",
+            subtitle: "生产关系的总和",
+            keyPoints: [
+              "社会一定发展阶段的<strong>生产力所决定的生产关系的总和</strong>"
+            ],
+            quickTip: "💡 由生产力决定的生产关系"
+          },
+          {
+            name: "上层建筑",
+            subtitle: "意识形态+政治法律制度及组织",
+            keyPoints: [
+              "建立在一定<strong>经济基础</strong>之上",
+              "包括<strong>①意识形态</strong>",
+              "包括<strong>②政治法律制度及设施和政治组织</strong>"
+            ],
+            quickTip: "💡 思想+制度两大部分"
+          },
+          {
+            name: "科学技术",
+            subtitle: "第一生产力",
+            keyPoints: [
+              "是<strong>先进生产力的重要标志</strong>",
+              "是推动社会文明进步的<strong>重要力量</strong>",
+              "<strong class='text-amber-400'>【核心论断】</strong>科学技术是第一生产力",
+              "在现代，日益成为生产发展的<strong>决定性因素</strong>"
+            ],
+            quickTip: "💡 科技是第一生产力！"
+          },
+          {
+            name: "历史人物与杰出人物",
+            subtitle: "必然与偶然的统一",
+            keyPoints: [
+              "<strong>【历史人物】</strong>主要倡导者、组织领导者或思想理论、科学文化的重要代表",
+              "<strong>【杰出人物】</strong>对推动历史社会发展作出重要贡献的历史人物",
+              "<strong class='text-red-400'>【重要原则】</strong>不能决定和改变历史发展的总进程和总方向",
+              "任何历史人物的出现都体现了<strong>必然与偶然的统一</strong>"
+            ],
+            quickTip: "💡 英雄推动历史，但不能改变历史总方向"
+          }
+        ]
+      },
+      {
+        id: 7,
+        title: "7. 商品、货币、劳动二重性、商品经济、价值规律",
+        concepts: [
+          {
+            name: "商品",
+            subtitle: "用于交换的劳动产品",
+            keyPoints: [
+              "<strong>【定义】</strong>用于交换的劳动产品",
+              "<strong>【两个关键】</strong>①交换 ②劳动产品"
+            ],
+            quickTip: "💡 必须能交换且是劳动产品"
+          },
+          {
+            name: "货币",
+            subtitle: "固定充当一般等价物的商品",
+            keyPoints: [
+              "在长期交换过程中形成的<strong>固定充当一般等价物的商品</strong>",
+              "<strong>【五种职能】</strong>价值尺度、流通手段、贮藏手段、支付手段、世界货币",
+              "<strong class='text-amber-400'>【两个最基本职能】</strong>价值尺度 + 流通手段"
+            ],
+            quickTip: "💡 记住两个最基本职能"
+          },
+          {
+            name: "商品的二因素",
+            subtitle: "使用价值+价值",
+            keyPoints: [
+              "<strong class='text-purple-400'>【使用价值】</strong>自然属性，能满足人的某种需要",
+              "<strong class='text-amber-400'>【价值】</strong>社会属性，凝结在商品中的无差别人类劳动",
+              "商品是<strong>使用价值和价值的统一体</strong>"
+            ],
+            quickTip: "💡 价值是社会属性，使用价值是自然属性"
+          },
+          {
+            name: "劳动的二重性",
+            subtitle: "具体劳动+抽象劳动",
+            keyPoints: [
+              "<strong class='text-purple-400'>【具体劳动】</strong>生产一定使用价值的具体形式的劳动 → 形成<span class='text-purple-400'>使用价值</span>",
+              "<strong class='text-amber-400'>【抽象劳动】</strong>无差别的一般人类劳动 → 形成<span class='text-amber-400'>价值</span>",
+              "<strong class='text-red-400'>【理解政治经济学的枢纽】</strong>劳动二重性理论"
+            ],
+            quickTip: "💡 具体劳动→使用价值，抽象劳动→价值"
+          },
+          {
+            name: "商品经济",
+            subtitle: "产生的历史条件",
+            keyPoints: [
+              "<strong>【条件①】</strong>存在社会分工",
+              "<strong>【条件②】</strong>生产资料和劳动产品属于不同的所有者"
+            ],
+            quickTip: "💡 分工+不同所有者"
+          },
+          {
+            name: "社会必要劳动时间",
+            subtitle: "决定商品价值量",
+            keyPoints: [
+              "在<strong>现有社会正常生产条件</strong>下，在<strong>社会平均劳动熟练程度和劳动强度</strong>下制造某种使用价值所需要的劳动时间",
+              "<strong class='text-amber-400'>【关键】</strong>决定商品价值量的是社会必要劳动时间，不是个别劳动时间"
+            ],
+            quickTip: "💡 社会必要劳动时间决定价值量"
+          },
+          {
+            name: "价值规律",
+            subtitle: "商品经济的基本规律",
+            keyPoints: [
+              "<strong>【主要内容①】</strong>商品价值量由社会必要劳动时间决定",
+              "<strong>【主要内容②】</strong>商品交换以价值量为基础，按照等价交换原则进行",
+              "<strong>【表现形式】</strong>价格围绕价值波动（受供求关系影响）",
+              "从较长时间看，商品的<strong>平均价格和价值相一致</strong>"
+            ],
+            quickTip: "💡 价格围绕价值波动，长期趋于一致"
+          }
+        ]
+      },
+      {
+        id: 8,
+        title: "8. 劳动力商品、不变资本、可变资本、剩余价值、资本主义基本矛盾",
+        concepts: [
+          {
+            name: "劳动力商品",
+            subtitle: "人的劳动能力",
+            keyPoints: [
+              "<strong>【定义】</strong>劳动力是人的脑力和体力的总和",
+              "<strong>【使用价值】</strong>能够创造新的价值，且新价值比劳动力本身价值大",
+              "<strong class='text-amber-400'>【成为商品的条件】</strong>①法律上自由 ②一无所有",
+              "<strong>【价值包括】</strong>①维持劳动者生存 ②维持家属生存 ③教育和训练费用"
+            ],
+            quickTip: "💡 自由+一无所有=劳动力商品化"
+          },
+          {
+            name: "不变资本 vs 可变资本",
+            subtitle: "理解剩余价值的关键",
+            keyPoints: [
+              "<strong class='text-purple-400'>【不变资本 c】</strong>生产资料形式存在，只转移价值不增殖（设备、材料）",
+              "<strong class='text-amber-400'>【可变资本 v】</strong>购买劳动力的资本，能产生剩余价值（工人工资）",
+              "<strong class='text-red-400'>【核心区别】</strong>不变资本只转移，可变资本能增殖"
+            ],
+            quickTip: "💡 设备材料=不变，工资=可变"
+          },
+          {
+            name: "剩余价值",
+            subtitle: "资本主义剥削的秘密",
+            keyPoints: [
+              "雇佣工人创造的<strong>超过劳动力价值的那部分价值</strong>",
+              "被资本家<strong>无偿占有</strong>",
+              "是雇佣工人<strong>剩余劳动的凝结</strong>",
+              "体现了资本家与雇佣工人之间<strong>剥削与被剥削的关系</strong>"
+            ],
+            quickTip: "💡 剩余价值=剥削的本质"
+          },
+          {
+            name: "剩余价值率",
+            subtitle: "资本家赚的 vs 工人赚的",
+            keyPoints: [
+              "<strong>【公式】</strong>m' = m/v",
+              "<strong>【其中】</strong>m = 剩余价值，v = 可变资本",
+              "<strong>【理解】</strong>资本家赚的钱 ÷ 工人赚的钱"
+            ],
+            quickTip: "💡 剥削程度的量化指标"
+          },
+          {
+            name: "资本主义基本矛盾",
+            subtitle: "生产社会化 vs 私人占有",
+            keyPoints: [
+              "<strong>【商品经济基本矛盾】</strong>私人劳动和社会劳动的矛盾",
+              "<strong class='text-red-400'>【资本主义基本矛盾】</strong>生产社会化和生产资料资本主义私人占有之间的矛盾"
+            ],
+            quickTip: "💡 社会化生产 vs 私人占有=根本矛盾"
+          }
+        ]
+      },
+      {
+        id: 9,
+        title: "9. 垄断资本主义、金融资本、金融寡头、国家垄断资本主义、'两个必然'与'两个决不会'",
+        concepts: [
+          {
+            name: "垄断资本主义",
+            subtitle: "帝国主义=资本主义最高阶段",
+            keyPoints: [
+              "<strong>【定义】</strong>少数大企业为获取高额利润，对商品生产、销售、价格进行操纵和控制",
+              "<strong>【实质】</strong>垄断资本凭借垄断地位获取高额垄断利润",
+              "<strong class='text-amber-400'>【地位】</strong>垄断资本主义即帝国主义，是资本主义发展的最高阶段"
+            ],
+            quickTip: "💡 垄断=资本主义最高阶段"
+          },
+          {
+            name: "垄断利润",
+            subtitle: "超过平均利润的高额利润",
+            keyPoints: [
+              "垄断资本家凭借<strong>垄断地位</strong>获得的<strong>超过平均利润的高额利润</strong>",
+              "<strong>【来源】</strong>归根到底来自无产阶级和其他劳动人民所创造的剩余价值"
+            ],
+            quickTip: "💡 垄断地位→高额利润"
+          },
+          {
+            name: "金融资本",
+            subtitle: "工业+银行垄断资本的融合",
+            keyPoints: [
+              "由<strong>工业垄断资本和银行垄断资本融合</strong>在一起形成的垄断资本",
+              "<strong>【形成途径】</strong>金融联系、资本参与、人事参与"
+            ],
+            quickTip: "💡 工业资本+银行资本=金融资本"
+          },
+          {
+            name: "金融寡头",
+            subtitle: "操纵经济命脉、控制国家政权",
+            keyPoints: [
+              "操纵<strong>国民经济命脉</strong>，实际上控制<strong>国家政权</strong>的少数垄断资本家或集团",
+              "<strong>【统治方式①】</strong>经济控制 → '参与制'（层层控制企业股票）",
+              "<strong>【统治方式②】</strong>政治控制 → '个人联合'（亲自或指派代理人担任政府要职）",
+              "<strong>【统治方式③】</strong>社会控制 → 政策咨询机构、掌握媒体教育等上层建筑"
+            ],
+            quickTip: "💡 经济+政治+社会全方位控制"
+          },
+          {
+            name: "国家垄断资本主义",
+            subtitle: "国家政权+私人垄断资本融合",
+            keyPoints: [
+              "<strong>国家政权和私人垄断资本</strong>融合在一起的垄断资本主义",
+              "是<strong>科技进步和生产社会化</strong>程度进一步提高的产物",
+              "是<strong>资本主义基本矛盾</strong>进一步尖锐化的必然结果"
+            ],
+            quickTip: "💡 国家+垄断资本的结合"
+          },
+          {
+            name: "'两个必然' vs '两个决不会'",
+            subtitle: "资本主义命运的辩证法",
+            keyPoints: [
+              "<strong class='text-red-400'>【两个必然】</strong>资本主义必然灭亡，社会主义必然胜利",
+              "<strong class='text-amber-400'>【两个决不会①】</strong>任何社会形态，在它所能容纳的全部生产力发挥出来以前，决不会灭亡",
+              "<strong class='text-purple-400'>【两个决不会②】</strong>新的更高的生产关系，在它的物质存在条件在旧社会的胎胞里成熟以前，决不会出现"
+            ],
+            quickTip: "💡 必然趋势+客观条件的统一"
+          }
+        ]
+      },
+      {
+        id: 10,
+        title: "10. 无产阶级革命、空想社会主义、科学社会主义、共产主义社会",
+        concepts: [
+          {
+            name: "无产阶级革命",
+            subtitle: "人类历史上最广泛、最深刻、最彻底的革命",
+            keyPoints: [
+              "由<strong>无产阶级领导劳动人民</strong>推翻资产阶级统治和资本主义制度",
+              "建立<strong>无产阶级专政和社会主义制度</strong>",
+              "是<strong>资本主义社会内部矛盾发展</strong>的必然结果",
+              "<strong class='text-red-400'>【历史地位】</strong>人类历史上最广泛、最深刻、最彻底的革命"
+            ],
+            quickTip: "💡 推翻资本主义，建立社会主义"
+          },
+          {
+            name: "空想社会主义",
+            subtitle: "马克思主义的理论来源之一",
+            keyPoints: [
+              "<strong>【代表人物】</strong>圣西门、傅立叶、欧文（<span class='text-amber-400'>记忆口诀：胜利哦</span>）",
+              "<strong>【性质】</strong>早期无产阶级意识和利益的先声，是不成熟的理论",
+              "反映了早期无产阶级要求<strong>改造现存社会、建立理想新社会</strong>的愿望",
+              "<strong class='text-purple-400'>【局限性①】</strong>只看到资本主义必然灭亡，却<strong>未能揭示经济根源</strong>",
+              "<strong class='text-purple-400'>【局限性②】</strong>要求埋葬资本主义，却<strong>看不到埋葬资本主义的力量</strong>（无产阶级）",
+              "<strong class='text-purple-400'>【局限性③】</strong>憧憬理想社会，却<strong>找不到通往理想社会的现实道路</strong>"
+            ],
+            quickTip: "💡 胜利哦=圣西门+傅立叶+欧文（多选题易考）"
+          },
+          {
+            name: "科学社会主义",
+            subtitle: "《共产党宣言》标志公开问世",
+            keyPoints: [
+              "马克思、恩格斯在揭示<strong>人类社会发展一般规律</strong>和<strong>资本主义发展特殊规律</strong>的基础上创立",
+              "<strong>【核心内容①】</strong>科学论证了社会主义替代资本主义的历史必然性",
+              "<strong>【核心内容②】</strong>阐明了无产阶级的历史使命",
+              "<strong>【核心内容③】</strong>提出了无产阶级革命斗争的战略策略",
+              "<strong>【核心内容④】</strong>科学预见了未来社会的基本特征",
+              "<strong>【核心内容⑤】</strong>提出了从资本主义向共产主义过渡时期的理论",
+              "<strong class='text-amber-400'>【标志性事件】</strong>《共产党宣言》的发表标志着科学社会主义的公开问世"
+            ],
+            quickTip: "💡 《共产党宣言》=科学社会主义诞生标志"
+          },
+          {
+            name: "共产主义社会",
+            subtitle: "三个基本特征",
+            keyPoints: [
+              "<strong class='text-red-400'>【特征①】</strong>物质财富极大丰富，消费资料<strong>按需分配</strong>",
+              "<strong class='text-amber-400'>【特征②】</strong>社会关系高度和谐，人们<strong>精神境界极大提高</strong>",
+              "<strong class='text-purple-400'>【特征③】</strong>实现每个人<strong>自由而全面发展</strong>，人类从<strong>必然王国向自由王国飞跃</strong>"
+            ],
+            quickTip: "💡 物质丰富+精神提高+全面发展"
+          }
+        ]
+      }
+    ];
+
+    // ==================== 应用状态 ====================
+    let currentMode = 'exam';
+    let currentQuestionIndex = 0;
+    let userMemoryStats = {};
+    let userConceptStats = {};
+    
+    // 从localStorage加载记忆状态
+    function loadMemoryStats() {
+      const saved = localStorage.getItem('marxism_memory_stats');
+      if (saved) {
+        userMemoryStats = JSON.parse(saved);
+      } else {
+        // 初始化记忆状态
+        questionBank.forEach(q => {
+          userMemoryStats[q.id] = {
+            practiced: 0,
+            lastScore: 0,
+            bestScore: 0,
+            lastPractice: null
+          };
+        });
+      }
+    }
+    
+    // 保存记忆状态
+    function saveMemoryStats() {
+      localStorage.setItem('marxism_memory_stats', JSON.stringify(userMemoryStats));
+    }
+    
+    // 加载概念状态
+    function loadConceptStats() {
+      const saved = localStorage.getItem('marxism_concept_stats');
+      if (saved) {
+        userConceptStats = JSON.parse(saved);
+      } else {
+        // 初始化概念状态
+        coreConcepts.forEach(section => {
+          section.concepts.forEach(concept => {
+            const key = `${section.id}-${concept.name}`;
+            userConceptStats[key] = {
+              viewed: 0,
+              lastView: null
+            };
+          });
+        });
+      }
+    }
+    
+    // 保存概念状态
+    function saveConceptStats() {
+      localStorage.setItem('marxism_concept_stats', JSON.stringify(userConceptStats));
+    }
+    
+    // 更新记忆状态
+    function updateMemoryStats(questionId, score) {
+      if (!userMemoryStats[questionId]) {
+        userMemoryStats[questionId] = {
+          practiced: 0,
+          lastScore: 0,
+          bestScore: 0,
+          lastPractice: null
+        };
+      }
+      
+      const stats = userMemoryStats[questionId];
+      stats.practiced++;
+      stats.lastScore = score;
+      stats.bestScore = Math.max(stats.bestScore, score);
+      stats.lastPractice = new Date().toISOString();
+      
+      saveMemoryStats();
+      updateProgress();
+      updateQuestionList();
+      updateReviewStats();
+    }
+    
+    // 更新概念状态
+    function updateConceptStats(sectionId, conceptName) {
+      const key = `${sectionId}-${conceptName}`;
+      if (!userConceptStats[key]) {
+        userConceptStats[key] = {
+          viewed: 0,
+          lastView: null
+        };
+      }
+      
+      userConceptStats[key].viewed++;
+      userConceptStats[key].lastView = new Date().toISOString();
+      saveConceptStats();
+      updateReviewStats();
+    }
+    
+    // DOM元素
+    const modeExamBtn = document.getElementById('mode-exam');
+    const modeConceptsBtn = document.getElementById('mode-concepts');
+    const modeQuickReviewBtn = document.getElementById('mode-quick-review');
+    const examMode = document.getElementById('exam-mode');
+    const conceptsMode = document.getElementById('concepts-mode');
+    const quickReviewMode = document.getElementById('quick-review-mode');
+    const progressSection = document.getElementById('progress-section');
+    const questionList = document.getElementById('question-list');
+    const conceptsContainer = document.getElementById('concepts-container');
+    const conceptSearch = document.getElementById('concept-search');
+    const answeringArea = document.getElementById('answering-area');
+    const questionSection = document.getElementById('question-section');
+    const questionText = document.getElementById('question-text');
+    const questionNumber = document.getElementById('question-number');
+    const structureList = document.getElementById('structure-list');
+    const keyPointsList = document.getElementById('key-points-list');
+    const memoryTips = document.getElementById('memory-tips');
+    const memoryHints = document.getElementById('memory-hints');
+    const toggleHintsBtn = document.getElementById('toggle-hints');
+    const hintToggleText = document.getElementById('hint-toggle-text');
+    const userAnswer = document.getElementById('user-answer');
+    const checkBtn = document.getElementById('check-btn');
+    const showAnswerBtn = document.getElementById('show-answer-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const resultSection = document.getElementById('result-section');
+    const resultContent = document.getElementById('result-content');
+    const referenceSection = document.getElementById('reference-section');
+    const referenceContent = document.getElementById('reference-content');
+    const answerKeywordsFront = document.getElementById('answer-keywords-front');
+    const wordCount = document.getElementById('word-count');
+    const modeOutlineBtn = document.getElementById('mode-outline');
+    const modeFullBtn = document.getElementById('mode-full');
+    const answerFlashcard = document.getElementById('answer-flashcard');
+    const progressText = document.getElementById('progress-text');
+    const progressFill = document.getElementById('progress-fill');
+    
+    // 快速复习相关元素
+    const reviewPracticed = document.getElementById('review-practiced');
+    const reviewAvgScore = document.getElementById('review-avg-score');
+    const reviewMastered = document.getElementById('review-mastered');
+    const conceptsViewed = document.getElementById('concepts-viewed');
+    const keyConcepts = document.getElementById('key-concepts');
+    const reviewWeakBtn = document.getElementById('review-weak');
+    const reviewKeyConceptsBtn = document.getElementById('review-key-concepts');
+    const startQuizBtn = document.getElementById('start-quiz');
+    const quizArea = document.getElementById('quiz-area');
+    const quizQuestion = document.getElementById('quiz-question');
+    const quizOptions = document.getElementById('quiz-options');
+    const checkQuizBtn = document.getElementById('check-quiz');
+    const nextQuizBtn = document.getElementById('next-quiz');
+    const quizResult = document.getElementById('quiz-result');
+    
+    // ==================== 模式切换 ====================
+    function switchMode(mode) {
+      currentMode = mode;
+      
+      // 更新按钮样式
+      [modeExamBtn, modeConceptsBtn, modeQuickReviewBtn].forEach(btn => {
+        btn.classList.remove('active', 'bg-gradient-to-r', 'from-amber-500/30', 'to-purple-500/30');
+        btn.classList.add('bg-white/5', 'text-gray-300');
+      });
+      
+      // 隐藏所有模式
+      examMode.classList.add('hidden');
+      conceptsMode.classList.add('hidden');
+      quickReviewMode.classList.add('hidden');
+      progressSection.classList.add('hidden');
+      
+      // 显示当前模式
+      switch(mode) {
+        case 'exam':
+          examMode.classList.remove('hidden');
+          progressSection.classList.remove('hidden');
+          modeExamBtn.classList.add('active', 'bg-gradient-to-r', 'from-amber-500/30', 'to-purple-500/30');
+          modeExamBtn.classList.remove('bg-white/5', 'text-gray-300');
+          break;
+        case 'concepts':
+          conceptsMode.classList.remove('hidden');
+          modeConceptsBtn.classList.add('active', 'bg-gradient-to-r', 'from-amber-500/30', 'to-purple-500/30');
+          modeConceptsBtn.classList.remove('bg-white/5', 'text-gray-300');
+          initConcepts();
+          break;
+        case 'quick-review':
+          quickReviewMode.classList.remove('hidden');
+          modeQuickReviewBtn.classList.add('active', 'bg-gradient-to-r', 'from-amber-500/30', 'to-purple-500/30');
+          modeQuickReviewBtn.classList.remove('bg-white/5', 'text-gray-300');
+          updateReviewStats();
+          break;
+      }
+    }
+    
+    modeExamBtn.addEventListener('click', () => switchMode('exam'));
+    modeConceptsBtn.addEventListener('click', () => switchMode('concepts'));
+    modeQuickReviewBtn.addEventListener('click', () => switchMode('quick-review'));
+    
+    // ==================== 大题记忆训练功能 ====================
+    // 更新进度
+    function updateProgress() {
+      let totalPracticed = 0;
+      let totalScore = 0;
+      
+      questionBank.forEach(q => {
+        const stats = userMemoryStats[q.id];
+        if (stats && stats.practiced > 0) {
+          totalPracticed++;
+          totalScore += stats.bestScore;
+        }
+      });
+      
+      const progressPercentage = (totalPracticed / questionBank.length) * 100;
+      progressText.textContent = `${totalPracticed}/${questionBank.length}`;
+      progressFill.style.width = `${progressPercentage}%`;
+    }
+    
+    // 初始化问题列表
+    function initQuestionList() {
+      questionList.innerHTML = '';
+      
+      questionBank.forEach((question, index) => {
+        const stats = userMemoryStats[question.id] || { practiced: 0, bestScore: 0 };
+        
+        let memoryClass = 'memory-level-1';
+        let memoryText = '未练习';
+        
+        if (stats.practiced > 0) {
+          if (stats.bestScore >= 0.8) {
+            memoryClass = 'memory-level-3';
+            memoryText = '已掌握';
+          } else if (stats.bestScore >= 0.6) {
+            memoryClass = 'memory-level-2';
+            memoryText = '需强化';
+          } else {
+            memoryClass = 'memory-level-1';
+            memoryText = '待加强';
+          }
+        }
+        
+        const questionCard = document.createElement('button');
+        questionCard.className = `tag-animate text-left p-4 rounded-xl border ${memoryClass} transition-all hover:bg-white/5 w-full`;
+        questionCard.innerHTML = `
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs bg-red-600/20 text-red-300 px-2 py-1 rounded-full">${index + 1}</span>
+                <span class="text-xs text-gray-400">${question.category}</span>
+              </div>
+              <p class="text-sm text-gray-200 font-medium mb-2">${question.title}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs px-2 py-1 rounded-full ${stats.bestScore >= 0.8 ? 'bg-green-600/20 text-green-300' : stats.bestScore >= 0.6 ? 'bg-yellow-600/20 text-yellow-300' : 'bg-red-600/20 text-red-300'}">
+                ${memoryText}
+              </span>
+              ${stats.practiced > 0 ? `<p class="text-xs text-gray-400 mt-1">${Math.round(stats.bestScore * 100)}%</p>` : ''}
+            </div>
+          </div>
+        `;
+        
+        questionCard.onclick = () => selectQuestion(index);
+        questionList.appendChild(questionCard);
+      });
+    }
+    
+    // 选择问题
+    function selectQuestion(index) {
+      currentQuestionIndex = index;
+      showQuestion();
+      answeringArea.classList.remove('hidden');
+      
+      // 滚动到答题区域
+      setTimeout(() => {
+        questionSection.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+    
+    // 显示问题
+    function showQuestion() {
+      const question = questionBank[currentQuestionIndex];
+      const stats = userMemoryStats[question.id] || { practiced: 0, bestScore: 0 };
+      
+      questionNumber.textContent = `${currentQuestionIndex + 1}/${questionBank.length}`;
+      questionText.textContent = question.title;
+      
+      // 更新结构列表
+      structureList.innerHTML = '';
+      question.structure.forEach(item => {
+        const li = document.createElement('p');
+        li.className = 'text-sm text-gray-300 mb-1';
+        li.textContent = item;
+        structureList.appendChild(li);
+      });
+      
+      // 更新关键词列表
+      keyPointsList.innerHTML = '';
+      question.keyPoints.forEach(point => {
+        const badge = document.createElement('span');
+        badge.className = 'px-3 py-1 bg-red-600/20 text-red-300 text-xs rounded-full mb-1';
+        badge.textContent = point;
+        keyPointsList.appendChild(badge);
+      });
+      
+      // 更新记忆技巧
+      memoryTips.textContent = question.memoryTips;
+      
+      // 重置答案框
+      userAnswer.value = '';
+      updateWordCount();
+      
+      // 隐藏结果和参考答案
+      resultSection.classList.add('hidden');
+      referenceSection.classList.add('hidden');
+      
+      // 重置闪卡
+      answerFlashcard.classList.remove('flipped');
+      
+      // 更新记忆提示状态
+      if (stats.practiced === 0 || stats.bestScore < 0.6) {
+        // 首次练习或掌握不好，显示提示
+        memoryHints.classList.remove('hidden');
+        hintToggleText.textContent = '隐藏记忆提示';
+      } else {
+        // 已掌握，隐藏提示
+        memoryHints.classList.add('hidden');
+        hintToggleText.textContent = '显示记忆提示';
+      }
+    }
+    
+    // 检查答案
+    function checkAnswer() {
+      const answer = userAnswer.value.trim();
+      if (!answer) {
+        showToast('请输入你的答案');
+        return;
+      }
+
+      const question = questionBank[currentQuestionIndex];
+      const result = analyzeAnswer(answer, question);
+      displayResult(result, question);
+      
+      // 更新记忆状态
+      updateMemoryStats(question.id, result.score);
+      
+      // 滚动到结果区域
+      setTimeout(() => {
+        resultSection.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+    
+    // 分析答案
+    function analyzeAnswer(userAnswerText, question) {
+      const matchedPoints = [];
+      const missedPoints = [];
+      const userAnswerLower = userAnswerText.toLowerCase();
+      
+      // 检查关键点匹配
+      question.keyPoints.forEach(point => {
+        const pointLower = point.toLowerCase();
+        if (userAnswerLower.includes(pointLower)) {
+          matchedPoints.push(point);
+        } else {
+          missedPoints.push(point);
+        }
+      });
+      
+      // 计算得分
+      const score = matchedPoints.length / question.keyPoints.length;
+      
+      return { 
+        matchedPoints, 
+        missedPoints, 
+        score
+      };
+    }
+    
+    // 显示结果
+    function displayResult(result, question) {
+      let resultHTML = '';
+      
+      // 得分指示器
+      let scoreClass = 'bg-red-600/20 text-red-400';
+      let scoreText = '需要加强记忆';
+      let scoreIcon = '📚';
+      
+      if (result.score >= 0.8) {
+        scoreClass = 'bg-green-600/20 text-green-400';
+        scoreText = '掌握良好';
+        scoreIcon = '🎉';
+      } else if (result.score >= 0.6) {
+        scoreClass = 'bg-yellow-600/20 text-yellow-400';
+        scoreText = '部分掌握';
+        scoreIcon = '💪';
+      }
+      
+      resultHTML += `
+        <div class="flex items-center gap-3 mb-4 p-4 rounded-xl ${scoreClass}">
+          <span class="text-2xl">${scoreIcon}</span>
+          <div class="flex-1">
+            <p class="font-semibold">${scoreText}</p>
+            <p class="text-sm opacity-80">匹配度：${Math.round(result.score * 100)}% (${result.matchedPoints.length}/${question.keyPoints.length} 个关键词)</p>
+          </div>
+        </div>
+      `;
+      
+      // 关键词匹配情况
+      resultHTML += `
+        <div class="mb-4">
+          <p class="text-gray-300 text-sm mb-2 font-medium">关键词匹配情况：</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-3 bg-green-900/20 rounded-lg border border-green-800/30">
+              <p class="text-green-400 text-xs mb-2">✅ 已匹配 (${result.matchedPoints.length}/${question.keyPoints.length})</p>
+              <div class="flex flex-wrap gap-1">
+                ${result.matchedPoints.map(p => `<span class="px-2 py-1 bg-green-600/20 text-green-300 text-xs rounded">${p}</span>`).join('')}
+              </div>
+            </div>
+            <div class="p-3 bg-red-900/20 rounded-lg border border-red-800/30">
+              <p class="text-red-400 text-xs mb-2">❌ 未匹配 (${result.missedPoints.length}/${question.keyPoints.length})</p>
+              <div class="flex flex-wrap gap-1">
+                ${result.missedPoints.map(p => `<span class="px-2 py-1 bg-red-600/20 text-red-300 text-xs rounded">${p}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // 改进建议
+      resultHTML += `
+        <div class="mt-4 pt-4 border-t border-white/10">
+          <p class="text-amber-400 text-sm mb-2">💡 记忆建议：</p>
+          <ul class="text-xs text-gray-300 space-y-1">
+            ${result.missedPoints.length > 0 ? `<li>• 重点记忆未匹配的关键词：${result.missedPoints.slice(0, 5).join('、')}</li>` : ''}
+            <li>• 按照"框架-要点-细节"的顺序记忆</li>
+            <li>• 背诵时注意答题结构的完整性</li>
+            <li>• 尝试默写完整答案，检查遗漏</li>
+          </ul>
+        </div>
+      `;
+      
+      resultContent.innerHTML = resultHTML;
+      resultSection.classList.remove('hidden');
+      resultSection.classList.add('result-enter');
+      
+      // 准备参考答案
+      prepareReferenceAnswer(question);
+    }
+    
+    // 准备参考答案
+    function prepareReferenceAnswer(question) {
+      // 设置背面内容
+      referenceContent.innerHTML = question.answer;
+      
+      // 设置正面关键词
+      answerKeywordsFront.innerHTML = '';
+      if (question.keyPoints && question.keyPoints.length > 0) {
+        const keywordHTML = question.keyPoints.slice(0, 10).map(keyword => {
+          return `<span class="keyword-badge">${keyword}</span>`;
+        }).join('');
+        answerKeywordsFront.innerHTML = `
+          <p class="text-sm text-gray-400 mb-2">本题核心关键词：</p>
+          <div class="flex flex-wrap gap-2">
+            ${keywordHTML}
+          </div>
+          ${question.keyPoints.length > 10 ? `<p class="text-xs text-gray-500 mt-2">...还有${question.keyPoints.length - 10}个关键词</p>` : ''}
+        `;
+      }
+      
+      // 显示参考答案区域
+      referenceSection.classList.remove('hidden');
+    }
+    
+    // 显示参考答案
+    function showReferenceAnswer() {
+      const question = questionBank[currentQuestionIndex];
+      prepareReferenceAnswer(question);
+      
+      // 滚动到参考答案区域
+      setTimeout(() => {
+        referenceSection.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+    
+    // 下一题
+    function nextQuestion() {
+      currentQuestionIndex = (currentQuestionIndex + 1) % questionBank.length;
+      showQuestion();
+      
+      // 滚动到题目区域
+      setTimeout(() => {
+        questionSection.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+    
+    // 切换提示显示
+    function toggleHints() {
+      if (memoryHints.classList.contains('hidden')) {
+        memoryHints.classList.remove('hidden');
+        hintToggleText.textContent = '隐藏记忆提示';
+      } else {
+        memoryHints.classList.add('hidden');
+        hintToggleText.textContent = '显示记忆提示';
+      }
+    }
+    
+    // 更新字数统计
+    function updateWordCount() {
+      const text = userAnswer.value;
+      const words = text.trim().length;
+      wordCount.textContent = `${words} 字`;
+      
+      // 根据字数改变颜色
+      if (words < 100) {
+        wordCount.className = 'text-red-400';
+      } else if (words < 200) {
+        wordCount.className = 'text-yellow-400';
+      } else {
+        wordCount.className = 'text-green-400';
+      }
+    }
+    
+    // 切换答题模式
+    function switchAnswerMode(mode) {
+      if (mode === 'outline') {
+        modeOutlineBtn.className = 'px-3 py-1 text-xs bg-amber-600/20 text-amber-300 rounded-full border border-amber-500/30 transition-all';
+        modeFullBtn.className = 'px-3 py-1 text-xs bg-white/5 text-gray-400 rounded-full border border-white/10 hover:bg-white/10 transition-all';
+      } else {
+        modeFullBtn.className = 'px-3 py-1 text-xs bg-amber-600/20 text-amber-300 rounded-full border border-amber-500/30 transition-all';
+        modeOutlineBtn.className = 'px-3 py-1 text-xs bg-white/5 text-gray-400 rounded-full border border-white/10 hover:bg-white/10 transition-all';
+      }
+    }
+    
+    // ==================== 核心概念速览功能 ====================
+    // 初始化核心概念
+    function initConcepts() {
+      conceptsContainer.innerHTML = '';
+      
+      // 复制核心概念数据，避免修改原数据
+      let conceptsToDisplay = [...coreConcepts];
+      
+      // 如果有搜索词，进行过滤
+      const searchTerm = conceptSearch.value.toLowerCase();
+      if (searchTerm) {
+        conceptsToDisplay = conceptsToDisplay.filter(section => {
+          const matchingConcepts = section.concepts.filter(concept => 
+            concept.name.toLowerCase().includes(searchTerm) || 
+            concept.subtitle.toLowerCase().includes(searchTerm) ||
+            concept.keyPoints.some(point => point.toLowerCase().includes(searchTerm))
+          );
+          
+          if (matchingConcepts.length > 0) {
+            // 创建新的section对象，只包含匹配的概念
+            return {
+              ...section,
+              concepts: matchingConcepts
+            };
+          }
+          return false;
+        });
+      }
+      
+      if (conceptsToDisplay.length === 0) {
+        conceptsContainer.innerHTML = `
+          <div class="text-center py-8">
+            <p class="text-gray-400">未找到匹配的概念</p>
+            <p class="text-sm text-gray-500 mt-2">尝试其他搜索词</p>
+          </div>
+        `;
+        return;
+      }
+      
+      conceptsToDisplay.forEach(section => {
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'mb-8';
+        
+        const sectionTitle = document.createElement('h3');
+        sectionTitle.className = 'font-serif-sc text-lg font-semibold text-red-400 mb-4 pb-2 border-b border-red-600/30';
+        sectionTitle.textContent = section.title;
+        sectionDiv.appendChild(sectionTitle);
+        
+        section.concepts.forEach(concept => {
+          const conceptCard = document.createElement('div');
+          conceptCard.className = 'concept-card p-4 rounded-xl mb-3 cursor-pointer';
+          conceptCard.onclick = () => {
+            updateConceptStats(section.id, concept.name);
+            toggleConceptDetails(conceptCard);
+          };
+          
+          let cardHTML = `
+            <div class="flex items-start justify-between mb-2">
+              <div>
+                <h4 class="font-serif-sc text-base font-semibold text-white">${concept.name}</h4>
+                <p class="text-xs text-gray-400 mt-1">${concept.subtitle}</p>
+              </div>
+              <button class="concept-toggle text-gray-500 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+            <div class="concept-details hidden space-y-2 text-sm text-gray-300 leading-relaxed mb-2">
+              ${concept.keyPoints.map(point => `<p class="pl-3">• ${point}</p>`).join('')}
+            </div>
+            <div class="mt-3 pt-2 border-t border-white/10">
+              <p class="text-xs text-yellow-300">${concept.quickTip}</p>
+            </div>
+          `;
+          
+          conceptCard.innerHTML = cardHTML;
+          sectionDiv.appendChild(conceptCard);
+        });
+        
+        conceptsContainer.appendChild(sectionDiv);
+      });
+    }
+    
+    // 切换概念详情显示
+    function toggleConceptDetails(card) {
+      const details = card.querySelector('.concept-details');
+      const icon = card.querySelector('.concept-toggle svg');
+      
+      if (details.classList.contains('hidden')) {
+        details.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        details.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+    
+    // ==================== 快速复习功能 ====================
+    // 更新复习统计
+    function updateReviewStats() {
+      // 大题统计
+      let totalPracticed = 0;
+      let totalScore = 0;
+      let masteredCount = 0;
+      
+      questionBank.forEach(q => {
+        const stats = userMemoryStats[q.id];
+        if (stats && stats.practiced > 0) {
+          totalPracticed++;
+          totalScore += stats.bestScore;
+          if (stats.bestScore >= 0.8) {
+            masteredCount++;
+          }
+        }
+      });
+      
+      reviewPracticed.textContent = `${totalPracticed}/${questionBank.length}`;
+      reviewMastered.textContent = `${masteredCount}题`;
+      
+      if (totalPracticed > 0) {
+        const avgScore = Math.round((totalScore / totalPracticed) * 100);
+        reviewAvgScore.textContent = `${avgScore}%`;
+      } else {
+        reviewAvgScore.textContent = '0%';
+      }
+      
+      // 概念统计
+      let totalConcepts = 0;
+      let viewedConcepts = 0;
+      
+      coreConcepts.forEach(section => {
+        section.concepts.forEach(concept => {
+          totalConcepts++;
+          const key = `${section.id}-${concept.name}`;
+          if (userConceptStats[key] && userConceptStats[key].viewed > 0) {
+            viewedConcepts++;
+          }
+        });
+      });
+      
+      conceptsViewed.textContent = `${viewedConcepts}/${totalConcepts}+`;
+      
+      // 重点概念数量（所有核心概念都是重点）
+      let keyConceptCount = 0;
+      coreConcepts.forEach(section => {
+        keyConceptCount += section.concepts.length;
+      });
+      keyConcepts.textContent = `${keyConceptCount}个`;
+    }
+    
+    // 复习薄弱题目
+    function reviewWeakQuestions() {
+      // 找出掌握程度低于0.6的题目
+      const weakQuestions = [];
+      questionBank.forEach((q, index) => {
+        const stats = userMemoryStats[q.id];
+        if (!stats || stats.bestScore < 0.6) {
+          weakQuestions.push(index);
+        }
+      });
+      
+      if (weakQuestions.length === 0) {
+        showToast('恭喜！没有薄弱题目');
+        return;
+      }
+      
+      // 随机选择一个薄弱题目
+      const randomIndex = weakQuestions[Math.floor(Math.random() * weakQuestions.length)];
+      currentQuestionIndex = randomIndex;
+      
+      // 切换到大题记忆模式
+      switchMode('exam');
+      showQuestion();
+      answeringArea.classList.remove('hidden');
+      
+      showToast(`开始复习薄弱题目 (${weakQuestions.length}道待加强)`);
+    }
+    
+    // 复习重点概念
+    function reviewKeyConcepts() {
+      // 切换到概念速览模式
+      switchMode('concepts');
+      
+      // 展开所有概念
+      setTimeout(() => {
+        const cards = conceptsContainer.querySelectorAll('.concept-card');
+        cards.forEach(card => {
+          const details = card.querySelector('.concept-details');
+          const icon = card.querySelector('.concept-toggle svg');
+          if (details && details.classList.contains('hidden')) {
+            details.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+          }
+        });
+      }, 100);
+      
+      showToast('已展开所有核心概念，请仔细复习');
+    }
+    
+    // 开始快速测试
+    let currentQuizQuestion = null;
+    let quizQuestions = [];
+    
+    function startQuiz() {
+      // 生成测试题目（从核心概念中随机抽取）
+      quizQuestions = generateQuizQuestions();
+      if (quizQuestions.length === 0) {
+        showToast('无法生成测试题目');
+        return;
+      }
+      
+      // 显示测试区域
+      quizArea.classList.remove('hidden');
+      quizResult.classList.add('hidden');
+      
+      // 显示第一题
+      showNextQuizQuestion();
+    }
+    
+    function generateQuizQuestions() {
+      const questions = [];
+      
+      // 从每个部分随机抽取1-2个概念
+      coreConcepts.forEach(section => {
+        const randomConcepts = [...section.concepts]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, Math.min(2, section.concepts.length));
+        
+        randomConcepts.forEach(concept => {
+          // 创建选择题
+          const question = {
+            type: 'multiple-choice',
+            section: section.title,
+            concept: concept.name,
+            question: `"${concept.name}" 指的是什么？`,
+            options: generateQuizOptions(section, concept),
+            correctAnswer: 0, // 第一个选项是正确答案
+            explanation: concept.keyPoints.join(' ')
+          };
+          
+          questions.push(question);
+        });
+      });
+      
+      return questions.sort(() => Math.random() - 0.5).slice(0, 10); // 随机取10题
+    }
+    
+    function generateQuizOptions(section, correctConcept) {
+      const options = [];
+      
+      // 添加正确答案
+      options.push(correctConcept.subtitle || "正确描述");
+      
+      // 添加错误答案（从同一部分的其他概念中随机抽取）
+      const otherConcepts = section.concepts.filter(c => c.name !== correctConcept.name);
+      const wrongOptions = otherConcepts
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(c => c.subtitle || "其他概念描述");
+      
+      // 如果错误答案不够，添加通用错误答案
+      while (wrongOptions.length < 3) {
+        wrongOptions.push("其他哲学概念描述", "不准确的定义", "相关但不同的概念");
+      }
+      
+      options.push(...wrongOptions);
+      
+      // 随机排序选项
+      return shuffleArray(options);
+    }
+    
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+    
+    function showNextQuizQuestion() {
+      if (quizQuestions.length === 0) {
+        quizResult.innerHTML = `
+          <div class="p-4 bg-green-600/20 rounded-lg">
+            <p class="text-green-300 font-medium">测试完成！</p>
+            <p class="text-sm text-gray-300 mt-2">所有题目已完成，返回继续复习</p>
+          </div>
+        `;
+        quizResult.classList.remove('hidden');
+        quizArea.classList.add('hidden');
+        return;
+      }
+      
+      currentQuizQuestion = quizQuestions.shift();
+      quizQuestion.textContent = currentQuizQuestion.question;
+      
+      // 清空选项
+      quizOptions.innerHTML = '';
+      
+      // 添加选项
+      currentQuizQuestion.options.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 cursor-pointer transition-colors';
+        optionDiv.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-xs">${String.fromCharCode(65 + index)}</div>
+            <span class="text-gray-200">${option}</span>
+          </div>
+        `;
+        
+        optionDiv.onclick = () => {
+          // 移除其他选项的选中状态
+          quizOptions.querySelectorAll('div').forEach(opt => {
+            opt.classList.remove('bg-amber-600/20', 'border-amber-400/30');
+          });
+          
+          // 选中当前选项
+          optionDiv.classList.add('bg-amber-600/20', 'border-amber-400/30');
+          currentQuizQuestion.selectedAnswer = index;
+        };
+        
+        quizOptions.appendChild(optionDiv);
+      });
+    }
+    
+    function checkQuizAnswer() {
+      if (currentQuizQuestion.selectedAnswer === undefined) {
+        showToast('请选择一个答案');
+        return;
+      }
+      
+      const isCorrect = currentQuizQuestion.selectedAnswer === currentQuizQuestion.correctAnswer;
+      
+      let resultHTML = '';
+      if (isCorrect) {
+        resultHTML = `
+          <div class="p-4 bg-green-600/20 rounded-lg mb-4">
+            <p class="text-green-300 font-medium">✅ 回答正确！</p>
+            <p class="text-sm text-gray-300 mt-2">${currentQuizQuestion.concept}</p>
+            <div class="mt-2 text-xs text-gray-400">
+              ${currentQuizQuestion.explanation.substring(0, 150)}...
+            </div>
+          </div>
+        `;
+      } else {
+        const correctOption = currentQuizQuestion.options[currentQuizQuestion.correctAnswer];
+        resultHTML = `
+          <div class="p-4 bg-red-600/20 rounded-lg mb-4">
+            <p class="text-red-300 font-medium">❌ 回答错误</p>
+            <p class="text-sm text-gray-300 mt-2">正确答案：${correctOption}</p>
+            <div class="mt-2 text-xs text-gray-400">
+              ${currentQuizQuestion.explanation.substring(0, 150)}...
+            </div>
+          </div>
+        `;
+      }
+      
+      quizResult.innerHTML = resultHTML;
+      quizResult.classList.remove('hidden');
+    }
+    
+    // ==================== 工具函数 ====================
+    // 提示消息
+    function showToast(message) {
+      // 移除现有的toast
+      const existingToasts = document.querySelectorAll('.toast-message');
+      existingToasts.forEach(toast => toast.remove());
+      
+      const toast = document.createElement('div');
+      toast.className = 'toast-message fixed bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-600 to-red-600 text-white px-6 py-3 rounded-xl shadow-lg z-50 result-enter';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+    
+    // ==================== 事件监听器 ====================
+    // 大题记忆训练事件
+    checkBtn.addEventListener('click', checkAnswer);
+    showAnswerBtn.addEventListener('click', showReferenceAnswer);
+    nextBtn.addEventListener('click', nextQuestion);
+    toggleHintsBtn.addEventListener('click', toggleHints);
+    
+    modeOutlineBtn.addEventListener('click', () => switchAnswerMode('outline'));
+    modeFullBtn.addEventListener('click', () => switchAnswerMode('full'));
+    
+    // 核心概念速览事件
+    conceptSearch.addEventListener('input', initConcepts);
+    
+    // 快速复习事件
+    reviewWeakBtn.addEventListener('click', reviewWeakQuestions);
+    reviewKeyConceptsBtn.addEventListener('click', reviewKeyConcepts);
+    startQuizBtn.addEventListener('click', startQuiz);
+    checkQuizBtn.addEventListener('click', checkQuizAnswer);
+    nextQuizBtn.addEventListener('click', showNextQuizQuestion);
+    
+    // 闪卡点击翻转
+    answerFlashcard.addEventListener('click', function() {
+      this.classList.toggle('flipped');
+    });
+    
+    // 键盘快捷键
+    document.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + Enter 提交答案
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (currentMode === 'exam') {
+          checkAnswer();
+        }
+      }
+      
+      // 空格键翻转闪卡
+      if (e.code === 'Space' && document.activeElement !== userAnswer) {
+        e.preventDefault();
+        if (!referenceSection.classList.contains('hidden')) {
+          answerFlashcard.classList.toggle('flipped');
+        }
+      }
+      
+      // 左右箭头切换题目
+      if (e.key === 'ArrowRight' && currentMode === 'exam') {
+        e.preventDefault();
+        nextQuestion();
+      }
+      
+      if (e.key === 'ArrowLeft' && currentMode === 'exam') {
+        e.preventDefault();
+        currentQuestionIndex = (currentQuestionIndex - 1 + questionBank.length) % questionBank.length;
+        showQuestion();
+      }
+    });
+    
+    // 输入框字数统计
+    userAnswer.addEventListener('input', updateWordCount);
+
+    // ==================== 初始化 ====================
+    function init() {
+      loadMemoryStats();
+      loadConceptStats();
+      initQuestionList();
+      updateProgress();
+      switchAnswerMode('outline');
+      updateReviewStats();
+      
+      // 显示欢迎消息
+      setTimeout(() => {
+        showToast('马原综合复习系统已启动！');
+      }, 1000);
+    }
+
+    // 启动应用
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
